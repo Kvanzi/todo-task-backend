@@ -1,0 +1,66 @@
+# https://docs.spring.io/spring-modulith/reference/appendix.html#schemas.postgresql
+databaseChangeLog:
+  - changeSet:
+      id: create-event-publication-table
+      author: Kvanzi
+      changes:
+        - createTable:
+            tableName: event_publication
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: listener_id
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_type
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: serialized_event
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: publication_date
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: completion_date
+                  type: TIMESTAMPTZ
+              - column:
+                  name: status
+                  type: TEXT
+              - column:
+                  name: completion_attempts
+                  type: INT
+              - column:
+                  name: last_resubmission_date
+                  type: TIMESTAMPTZ
+
+        - createIndex:
+            indexName: event_publication_by_completion_date_idx
+            tableName: event_publication
+            columns:
+              - column:
+                  name: completion_date
+
+  - changeSet:
+      id: add-event-hash-index
+      author: Kvanzi
+      changes:
+        - sql: # because using hash is not supported by liquibase
+            sql: >
+              CREATE INDEX IF NOT EXISTS event_publication_serialized_event_hash_idx
+              ON event_publication USING hash(serialized_event);
+      rollback:
+        - sql:
+            sql: DROP INDEX IF EXISTS event_publication_serialized_event_hash_idx;

@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HttpApiResponse<T, M> {
-
     @NonNull
     private final String message;
 

@@ -7,10 +7,7 @@ import jakarta.persistence.MappedSuperclass;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.proxy.HibernateProxy;
@@ -20,7 +17,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@Setter
+@Setter(AccessLevel.PROTECTED)
 @SuperBuilder
 @MappedSuperclass
 @NoArgsConstructor

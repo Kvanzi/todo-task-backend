@@ -1,4 +1,4 @@
-package com.kvanzi.todotaskbackend.shared.persistence;
+package com.kvanzi.todotaskbackend.shared.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.net.URI;

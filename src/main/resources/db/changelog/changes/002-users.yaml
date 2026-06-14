@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-users-table
+      author: Kvanzi
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: first_name
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+
+  - changeSet:
+      id: create-user-roles-table
+      author: Kvanzi
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    references: users(id)
+                    foreignKeyName: fk_user_roles_user_id
+              - column:
+                  name: role
+                  type: VARCHAR
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+        - sql:
+            sql: ALTER TABLE user_roles ADD CONSTRAINT user_role_check CHECK (role IN ('USER', 'ADMIN'));
+
+      rollback:
+        - sql:
+            sql: ALTER TABLE user_roles DROP CONSTRAINT user_role_check_constraint;
+        - dropTable:
+            tableName: user_roles

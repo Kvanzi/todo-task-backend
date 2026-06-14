@@ -67,3 +67,16 @@ databaseChangeLog:
             sql: ALTER TABLE user_roles DROP CONSTRAINT user_role_check_constraint;
         - dropTable:
             tableName: user_roles
+
+  - changeSet:
+      id: add-missing-password-hash-column
+      author: Kvanzi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: password_hash
+                  type: VARCHAR
+                  constraints:
+                    nullable: false

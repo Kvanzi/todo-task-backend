@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'checkstyle'
-    id 'org.springframework.boot' version '4.0.6'
+    id 'org.springframework.boot' version '4.1.0'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 ext {
@@ -22,6 +22,8 @@ repositories {
     mavenCentral()
 }
 
+def mapstructVersion = '1.6.3'
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -30,12 +32,17 @@ dependencies {
     implementation 'org.springframework.modulith:spring-modulith-starter-core'
     implementation 'org.springframework.modulith:spring-modulith-starter-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-liquibase'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
     runtimeOnly 'org.postgresql:postgresql'
 
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

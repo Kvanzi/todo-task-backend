@@ -13,7 +13,6 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = {})
 public @interface UserPassword {
-
     String message() default "{com.kvanzi.todotaskbackend.shared.validation.UserPassword.message}";
 
     Class<?>[] groups() default {};

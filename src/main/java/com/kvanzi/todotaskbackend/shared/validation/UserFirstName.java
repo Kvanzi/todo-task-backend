@@ -11,11 +11,11 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = {})
 @Pattern(
-    regexp = "^[a-zA-Z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u01FF]+([ \\-']?[a-zA-Z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u01FF]+){0,2}[.]?$"
+    regexp = "^[a-zA-Z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u01FF]+([ "
+        + "\\-']?[a-zA-Z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u01FF]+){0,2}[.]?$"
 )
 @Size(min = 1, max = 30)
 public @interface UserFirstName {
-
     String message() default "{com.kvanzi.todotaskbackend.shared.validation.UserFirstName.message}";
 
     Class<?>[] groups() default {};

@@ -59,6 +59,10 @@ test {
     useJUnitPlatform()
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-parameters'
+}
+
 checkstyle {
     configFile = file("${rootDir}/checkstyle.xml")
     showViolations = true

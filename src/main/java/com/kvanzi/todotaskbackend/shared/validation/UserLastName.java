@@ -2,6 +2,7 @@ package com.kvanzi.todotaskbackend.shared.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import jakarta.validation.ReportAsSingleViolation;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.lang.annotation.*;
@@ -10,6 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = {})
+@ReportAsSingleViolation
 @Pattern(
     regexp = "^[a-zA-Z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u01FF]+([ "
         + "\\-']?[a-zA-Z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u01FF]+){0,2}[.]?$"

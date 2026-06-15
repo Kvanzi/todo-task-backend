@@ -2,6 +2,7 @@ package com.kvanzi.todotaskbackend.shared.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import jakarta.validation.ReportAsSingleViolation;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import java.lang.annotation.*;
@@ -9,6 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@ReportAsSingleViolation
 @Constraint(validatedBy = {})
 @Email
 @Size(min = 5, max = 254)

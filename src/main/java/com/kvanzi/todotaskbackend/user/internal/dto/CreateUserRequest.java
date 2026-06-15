@@ -1,9 +1,9 @@
 package com.kvanzi.todotaskbackend.user.internal.dto;
 
+import com.kvanzi.todotaskbackend.shared.validation.UserEmail;
 import com.kvanzi.todotaskbackend.shared.validation.UserFirstName;
 import com.kvanzi.todotaskbackend.shared.validation.UserLastName;
 import com.kvanzi.todotaskbackend.shared.validation.UserPassword;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import org.jspecify.annotations.NonNull;
@@ -20,7 +20,7 @@ public class CreateUserRequest {
     @NotNull(message = "Last name cannot be null.")
     String lastName;
 
-    @Email
+    @UserEmail
     @NonNull
     @NotNull(message = "Email cannot be null.")
     String email;

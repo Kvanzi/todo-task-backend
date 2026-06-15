@@ -60,7 +60,7 @@ databaseChangeLog:
                     nullable: false
 
         - sql:
-            sql: ALTER TABLE user_roles ADD CONSTRAINT user_role_check CHECK (role IN ('USER', 'ADMIN'));
+            sql: ALTER TABLE user_roles ADD CONSTRAINT user_role_check_constraint CHECK (role IN ('USER', 'ADMIN'));
 
       rollback:
         - sql:

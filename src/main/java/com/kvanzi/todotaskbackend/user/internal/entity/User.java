@@ -38,6 +38,7 @@ public class User extends BaseEntity {
     @NonNull
     private String passwordHash;
 
+    @Setter(AccessLevel.NONE)
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(

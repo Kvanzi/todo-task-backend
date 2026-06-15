@@ -7,8 +7,9 @@ Project todo_db {
 Table users {
   id UUID [pk] // hibernate side generation UUIDv7
   first_name VARCHAR [not null]
-  last_name VARCHAR
+  last_name VARCHAR [not null]
   email VARCHAR [unique, not null]
+  password_hash VARCHAR [not null]
   created_at TIMESTAMPTZ [not null, default: `now()`]
   updated_at TIMESTAMPTZ
 }

@@ -10,6 +10,7 @@ Table users {
   last_name VARCHAR [not null]
   email VARCHAR [unique, not null]
   password_hash VARCHAR [not null]
+  last_password_changed_at TIMESTAMPTZ
   created_at TIMESTAMPTZ [not null, default: `now()`]
   updated_at TIMESTAMPTZ
 }

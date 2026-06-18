@@ -1,6 +1,6 @@
 package com.kvanzi.todotaskbackend.user.api.dto;
 
-import com.kvanzi.todotaskbackend.user.api.enumeration.Role;
+import com.kvanzi.todotaskbackend.shared.enumeration.Role;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Value;

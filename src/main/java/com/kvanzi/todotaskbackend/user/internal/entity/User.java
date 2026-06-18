@@ -1,7 +1,7 @@
 package com.kvanzi.todotaskbackend.user.internal.entity;
 
 import com.kvanzi.todotaskbackend.shared.persistence.BaseEntity;
-import com.kvanzi.todotaskbackend.user.api.enumeration.Role;
+import com.kvanzi.todotaskbackend.shared.enumeration.Role;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Collections;

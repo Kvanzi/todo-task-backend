@@ -9,6 +9,7 @@ import io.jsonwebtoken.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -60,6 +61,37 @@ public class JwtService {
         tokenRepository.revokeTokens(tokens.stream()
             .map(this::extractClaims)
             .map(this::extractTokenId)
+            .collect(Collectors.toSet())
+        );
+    }
+
+    @Transactional
+    public void revokeTokensGracefully(String... tokens) {
+        if (tokens == null || tokens.length == 0) {
+            return;
+        }
+
+        tokenRepository.revokeTokens(Stream.of(tokens)
+            .filter(Objects::nonNull)
+            .map(token -> {
+                try {
+                    return Optional.ofNullable(this.extractClaims(token));
+                } catch (Exception e) {
+                    log.warn("Failed to extract claims for token: [{}]. Reason: {}",
+                        maskToken(token), e.getMessage());
+                    return Optional.<Claims>empty();
+                }
+            })
+            .flatMap(Optional::stream)
+            .map(claims -> {
+                try {
+                    return Optional.ofNullable(this.extractTokenId(claims));
+                } catch (Exception e) {
+                    log.warn("Failed to extract token id from claims. Reason: {}", e.getMessage());
+                    return Optional.<UUID>empty();
+                }
+            })
+            .flatMap(Optional::stream)
             .collect(Collectors.toSet())
         );
     }
@@ -203,5 +235,12 @@ public class JwtService {
 
     private void executeTokenClearance() {
         tokenRepository.deleteAllExpired(Instant.now());
+    }
+
+    private String maskToken(String token) {
+        if (token == null || token.length() <= 20) {
+            return "***";
+        }
+        return token.substring(0, 10) + "..." + token.substring(token.length() - 10);
     }
 }

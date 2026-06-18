@@ -1,12 +1,13 @@
 package com.kvanzi.todotaskbackend.user.internal.service;
 
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
-import com.kvanzi.todotaskbackend.user.api.enumeration.Role;
+import com.kvanzi.todotaskbackend.shared.enumeration.Role;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.entity.User;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -31,7 +32,7 @@ public class UserService {
      * @throws EmailTakenException if a user with the provided email already exists
      */
     @Transactional
-    public PrivateUserSummary createUser(@NonNull CreateUserRequest request) {
+    public @NonNull PrivateUserSummary createUser(@NonNull CreateUserRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new EmailTakenException(EMAIL_TAKEN_MESSAGE);
         }
@@ -51,5 +52,10 @@ public class UserService {
             }
             throw e;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public @NonNull Optional<User> findUserByEmailIgnoreCase(@NonNull String email) {
+        return userRepository.findByEmailIgnoreCase(email);
     }
 }

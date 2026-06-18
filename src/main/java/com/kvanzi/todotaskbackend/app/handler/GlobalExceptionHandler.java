@@ -1,5 +1,7 @@
 package com.kvanzi.todotaskbackend.app.handler;
 
+import com.kvanzi.todotaskbackend.auth.api.exception.CredentialsMissingException;
+import com.kvanzi.todotaskbackend.auth.api.exception.InvalidCredentialsException;
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import java.util.*;
@@ -115,6 +117,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailTakenException.class)
     public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleEmailTakenException(EmailTakenException e) {
         return HttpApiResponse.<Void>status(HttpStatus.CONFLICT)
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleInvalidCredentialsException(
+        InvalidCredentialsException e) {
+        return HttpApiResponse.<Void>status(HttpStatus.UNAUTHORIZED)
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(CredentialsMissingException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleCredentialsMissingException(
+        CredentialsMissingException e) {
+        return HttpApiResponse.<Void>status(HttpStatus.BAD_REQUEST)
             .message(e.getMessage())
             .build();
     }

@@ -80,3 +80,14 @@ databaseChangeLog:
                   type: VARCHAR
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: add-last-password-changed-at-column
+      author: Kvanzi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: last_password_changed_at
+                  type: TIMESTAMPTZ

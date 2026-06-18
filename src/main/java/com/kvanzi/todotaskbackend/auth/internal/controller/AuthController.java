@@ -5,19 +5,20 @@ import com.kvanzi.todotaskbackend.auth.internal.dto.CreateTokensResponse;
 import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
 import com.kvanzi.todotaskbackend.auth.internal.properties.JwtProperties;
 import com.kvanzi.todotaskbackend.auth.internal.service.AuthService;
+import com.kvanzi.todotaskbackend.auth.internal.service.JwtService;
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
 import jakarta.validation.Valid;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
+    private final JwtService jwtService;
     private final JwtProperties jwtProperties;
 
     @PostMapping("/tokens")
@@ -39,11 +41,32 @@ public class AuthController {
             .build();
     }
 
+    @DeleteMapping("/tokens/current")
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> revokeAuthTokens(
+        @CookieValue(name = "refresh", required = false) @Nullable String refreshToken
+    ) {
+        jwtService.revokeTokensGracefully(refreshToken);
+        return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
+            .addHeader(HttpHeaders.SET_COOKIE,
+                buildEmptyRefreshCookie().toString(),
+                buildEmptyAccessCookie().toString()
+            )
+            .build();
+    }
+
     private ResponseCookie buildAccessResponseCookie(String token) {
         Duration maxAge =
             Duration.of(jwtProperties.getAccess().getDuration(), jwtProperties.getAccess().getDurationUnit());
 
         return buildTokenResponseCookie(JwtTokenType.ACCESS, token, maxAge);
+    }
+
+    private ResponseCookie buildEmptyRefreshCookie() {
+        return buildTokenResponseCookie(JwtTokenType.REFRESH, StringUtils.EMPTY, Duration.ZERO);
+    }
+
+    private ResponseCookie buildEmptyAccessCookie() {
+        return buildTokenResponseCookie(JwtTokenType.ACCESS, StringUtils.EMPTY, Duration.ZERO);
     }
 
     private ResponseCookie buildRefreshResponseCookie(String token) {

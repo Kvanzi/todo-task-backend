@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-jwt-tokens-table
+      author: Kvanzi
+      changes:
+        - createTable:
+            tableName: jwt_tokens
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: revoked
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issued_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+        - createIndex:
+            tableName: jwt_tokens
+            indexName: idx_jwt_token_user_id
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: add-token-type-column
+      author: Kvanzi
+      changes:
+        - addColumn:
+            tableName: jwt_tokens
+            columns:
+              - column:
+                  name: token_type
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: ALTER TABLE jwt_tokens ADD CONSTRAINT jwt_token_type_check_constraint CHECK (token_type IN ('REFRESH', 'ACCESS'));
+      rollback:
+        - sql:
+            sql: ALTER TABLE jwt_tokens DROP CONSTRAINT jwt_token_type_check_constraint;
+        - dropColumn:
+            tableName: jwt_tokens
+            columns:
+              - column:
+                  name: token_type

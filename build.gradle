@@ -22,6 +22,7 @@ repositories {
     mavenCentral()
 }
 
+def jjwtVersion = '0.13.0'
 def mapstructVersion = '1.6.3'
 
 dependencies {
@@ -36,6 +37,10 @@ dependencies {
 
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     implementation("org.mapstruct:mapstruct:${mapstructVersion}")
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"

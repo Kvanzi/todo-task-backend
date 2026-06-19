@@ -31,8 +31,9 @@ public class AuthController {
 
     @PostMapping("/tokens")
     public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> createAuthTokens(
-        @Valid @RequestBody CreateTokensRequest request) {
-        CreateTokensResponse tokensResponse = authService.processCreationTokensRequest(request);
+        @Valid @RequestBody CreateTokensRequest request,
+        @CookieValue(name = "refresh", required = false) String refreshToken) {
+        CreateTokensResponse tokensResponse = authService.processCreationTokensRequest(request, refreshToken);
         ResponseCookie refreshCookie = buildRefreshResponseCookie(tokensResponse.getRefreshToken());
         ResponseCookie accessCookie = buildAccessResponseCookie(tokensResponse.getAccessToken());
 

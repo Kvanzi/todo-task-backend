@@ -2,6 +2,7 @@ package com.kvanzi.todotaskbackend.app.handler;
 
 import com.kvanzi.todotaskbackend.auth.api.exception.CredentialsMissingException;
 import com.kvanzi.todotaskbackend.auth.api.exception.InvalidCredentialsException;
+import com.kvanzi.todotaskbackend.auth.api.exception.MissingRefreshTokenException;
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import java.util.*;
@@ -124,7 +125,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleInvalidCredentialsException(
         InvalidCredentialsException e) {
-        return HttpApiResponse.<Void>status(HttpStatus.UNAUTHORIZED)
+        return HttpApiResponse.<Void>unauthorized()
             .message(e.getMessage())
             .build();
     }
@@ -133,6 +134,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleCredentialsMissingException(
         CredentialsMissingException e) {
         return HttpApiResponse.<Void>status(HttpStatus.BAD_REQUEST)
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(MissingRefreshTokenException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleMissingRefreshTokenException(MissingRefreshTokenException e) {
+        return HttpApiResponse.<Void>unauthorized()
             .message(e.getMessage())
             .build();
     }

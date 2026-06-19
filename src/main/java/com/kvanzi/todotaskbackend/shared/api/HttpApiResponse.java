@@ -30,6 +30,14 @@ public final class HttpApiResponse<T, M> {
     @NonNull
     private final Instant timestamp;
 
+    public static <T, M> HttpApiResponse<T, M> of(
+        @NonNull String message,
+        @Nullable T data,
+        @Nullable M meta
+    ) {
+        return new HttpApiResponse<>(message, data, meta, Instant.now());
+    }
+
     public static <T> Builder<T> status(@NonNull HttpStatus status) {
         return new Builder<>(status);
     }
@@ -44,6 +52,10 @@ public final class HttpApiResponse<T, M> {
 
     public static <T> Builder<T> badRequest() {
         return new Builder<>(HttpStatus.BAD_REQUEST);
+    }
+
+    public static <T> Builder<T> unauthorized() {
+        return new Builder<>(HttpStatus.UNAUTHORIZED);
     }
 
     public static <T> Builder<T> notFound() {

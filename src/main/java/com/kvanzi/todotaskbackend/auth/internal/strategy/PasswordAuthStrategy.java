@@ -28,7 +28,7 @@ public class PasswordAuthStrategy implements AuthStrategy {
 
     @Override
     @Transactional
-    public CreateTokensResponse authenticate(CreateTokensRequest request) {
+    public CreateTokensResponse authenticate(CreateTokensRequest request, String refreshToken) {
         if (!request.isEmailAndPasswordProvided()) {
             throw new CredentialsMissingException("Email or password fields are missing.");
         }

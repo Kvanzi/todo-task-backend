@@ -24,7 +24,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     public void handle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                        @NonNull AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setCharacterEncoding(StandardCharsets.UTF_8);
         response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
         // same as cache-control but for HTTP/1.0 when cache-control for HTTP/1.1

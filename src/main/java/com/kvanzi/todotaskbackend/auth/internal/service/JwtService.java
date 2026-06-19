@@ -6,6 +6,7 @@ import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
 import com.kvanzi.todotaskbackend.auth.internal.properties.JwtProperties;
 import com.kvanzi.todotaskbackend.auth.internal.repository.JwtTokenRepository;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,31 +42,14 @@ public class JwtService {
         executeTokenClearance();
     }
 
-    @Transactional
+    public boolean isTokenRevoked(@NonNull UUID tokenId) {
+        return tokenRepository.existsByIdAndRevokedIsTrue(tokenId);
+    }
+
     public void revokeToken(@NonNull UUID tokenId) {
         tokenRepository.revokeToken(tokenId);
     }
 
-    @Transactional
-    public void revokeToken(@NonNull String token) {
-        UUID tokenId = extractTokenId(extractClaims(token));
-        tokenRepository.revokeToken(tokenId);
-    }
-
-    @Transactional
-    public void revokeTokens(@NonNull Set<@NonNull String> tokens) {
-        if (tokens.isEmpty()) {
-            return;
-        }
-
-        tokenRepository.revokeTokens(tokens.stream()
-            .map(this::extractClaims)
-            .map(this::extractTokenId)
-            .collect(Collectors.toSet())
-        );
-    }
-
-    @Transactional
     public void revokeTokensGracefully(String... tokens) {
         if (tokens == null || tokens.length == 0) {
             return;
@@ -96,7 +80,6 @@ public class JwtService {
         );
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 * * * *")
     public void clearExpiredTokens() {
         executeTokenClearance();
@@ -195,16 +178,6 @@ public class JwtService {
             extractIssuedAt(claims),
             isClaimsExpired(claims)
         );
-    }
-
-    @Transactional
-    protected @NonNull Optional<JwtToken> findById(@NonNull UUID id) {
-        return tokenRepository.findById(id);
-    }
-
-    @Transactional
-    protected void deleteToken(@NonNull JwtToken token) {
-        tokenRepository.delete(token);
     }
 
     private String generateToken(@Nullable Instant issuedAt, @Nullable Instant expiresAt, @NonNull UUID userId,

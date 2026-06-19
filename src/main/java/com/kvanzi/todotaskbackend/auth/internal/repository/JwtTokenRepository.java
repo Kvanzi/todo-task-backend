@@ -28,4 +28,6 @@ public interface JwtTokenRepository extends JpaRepository<@NonNull JwtToken, @No
     @Transactional
     @Query("DELETE FROM JwtToken t WHERE t.expiresAt < :now")
     int deleteAllExpired(Instant now);
+
+    boolean existsByIdAndRevokedIsTrue(UUID id);
 }

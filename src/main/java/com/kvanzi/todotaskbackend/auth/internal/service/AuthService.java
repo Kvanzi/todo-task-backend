@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,10 +23,11 @@ public class AuthService {
             .collect(Collectors.toUnmodifiableMap(AuthStrategy::getSupportedGrantType, Function.identity()));
     }
 
-    public @NonNull CreateTokensResponse processCreationTokensRequest(@NonNull CreateTokensRequest request) {
+    public @NonNull CreateTokensResponse processCreationTokensRequest(@NonNull CreateTokensRequest request,
+                                                                      @Nullable String refreshToken) {
         var grantType = request.getGrantType();
         return Optional.ofNullable(authStrategies.get(grantType))
             .orElseThrow(() -> new UnsupportedGrantTypeException(grantType))
-            .authenticate(request);
+            .authenticate(request, refreshToken);
     }
 }

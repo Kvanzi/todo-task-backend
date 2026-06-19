@@ -8,6 +8,7 @@ import com.kvanzi.todotaskbackend.user.internal.entity.User;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.repository.UserRepository;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -54,8 +55,11 @@ public class UserService {
         }
     }
 
-    @Transactional(readOnly = true)
     public @NonNull Optional<User> findUserByEmailIgnoreCase(@NonNull String email) {
         return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    public @NonNull Optional<User> findUserById(@NonNull UUID id) {
+        return userRepository.findById(id);
     }
 }

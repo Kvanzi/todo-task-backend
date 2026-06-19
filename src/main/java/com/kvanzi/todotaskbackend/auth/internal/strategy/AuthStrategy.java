@@ -7,5 +7,5 @@ import com.kvanzi.todotaskbackend.auth.internal.dto.GrantType;
 public interface AuthStrategy {
     GrantType getSupportedGrantType();
 
-    CreateTokensResponse authenticate(CreateTokensRequest request);
+    CreateTokensResponse authenticate(CreateTokensRequest request, String refreshToken);
 }

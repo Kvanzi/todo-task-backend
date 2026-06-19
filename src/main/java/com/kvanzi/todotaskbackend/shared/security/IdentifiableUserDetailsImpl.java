@@ -1,5 +1,6 @@
 package com.kvanzi.todotaskbackend.shared.security;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ public class IdentifiableUserDetailsImpl implements IdentifiableUserDetails {
     Collection<? extends GrantedAuthority> authorities = new HashSet<>();
     String password;
     String username;
+    Instant lastPasswordChangedAt;
 
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {

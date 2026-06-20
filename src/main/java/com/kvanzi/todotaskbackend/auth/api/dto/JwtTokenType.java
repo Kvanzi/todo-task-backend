@@ -1,4 +1,4 @@
-package com.kvanzi.todotaskbackend.auth.internal.enumeration;
+package com.kvanzi.todotaskbackend.auth.api.dto;
 
 public enum JwtTokenType {
     ACCESS, REFRESH

@@ -1,5 +1,7 @@
 package com.kvanzi.todotaskbackend.app.configuration;
 
+import static org.springframework.http.HttpMethod.*;
+import com.kvanzi.todotaskbackend.shared.enumeration.Role;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +39,10 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(req -> req
-                .anyRequest().permitAll()
+                .requestMatchers(POST, "/api/users", "/api/auth/tokens").permitAll()
+                .requestMatchers(DELETE, "/api/auth/tokens/current").permitAll()
+                .requestMatchers(GET, "/api/users/me").hasRole(Role.USER.name())
+                .anyRequest().hasRole(Role.ADMIN.name())
             )
             .build();
     }

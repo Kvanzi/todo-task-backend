@@ -1,6 +1,7 @@
 package com.kvanzi.todotaskbackend.user.api.dto;
 
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Value;
@@ -12,4 +13,6 @@ public class PrivateUserSummary {
     String lastName;
     String email;
     Set<Role> roles;
+    Instant createdAt;
+    Instant updatedAt;
 }

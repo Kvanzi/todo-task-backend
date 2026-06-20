@@ -1,7 +1,8 @@
 package com.kvanzi.todotaskbackend.user.internal.service;
 
-import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
+import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
+import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.entity.User;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +64,15 @@ public class UserService {
 
     public @NonNull Optional<User> findUserById(@NonNull UUID id) {
         return userRepository.findById(id);
+    }
+
+    public @NonNull Page<@NonNull PrivateUserSummary> getPrivateUsers(@NonNull Pageable pageable) {
+        return userRepository.findAll(pageable)
+            .map(userMapper::toPrivateUserSummary);
+    }
+
+    public @NonNull Page<@NonNull PublicUserSummary> getPublicUsers(@NonNull Pageable pageable) {
+        return userRepository.findAll(pageable)
+            .map(userMapper::toPublicUserSummary);
     }
 }

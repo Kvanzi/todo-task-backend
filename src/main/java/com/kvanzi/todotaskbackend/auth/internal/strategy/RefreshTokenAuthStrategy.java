@@ -7,8 +7,8 @@ import com.kvanzi.todotaskbackend.auth.api.exception.MissingRefreshTokenExceptio
 import com.kvanzi.todotaskbackend.auth.internal.dto.CreateTokensRequest;
 import com.kvanzi.todotaskbackend.auth.internal.dto.CreateTokensResponse;
 import com.kvanzi.todotaskbackend.auth.internal.dto.GrantType;
-import com.kvanzi.todotaskbackend.auth.internal.dto.JwtSummary;
-import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
+import com.kvanzi.todotaskbackend.auth.api.dto.JwtSummary;
+import com.kvanzi.todotaskbackend.auth.api.dto.JwtTokenType;
 import com.kvanzi.todotaskbackend.auth.internal.service.JwtService;
 import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetails;
 import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetailsService;
@@ -81,7 +81,7 @@ public class RefreshTokenAuthStrategy implements AuthStrategy {
             throw new InvalidJwtTokenException("Invalid refresh token. Try to re login.");
         }
 
-        if (passwordChangedAfterTokenIssued(userDetails, tokenSummary)) {
+        if (tokenSummary.passwordChangedAfterTokenIssued(userDetails.getLastPasswordChangedAt())) {
             throw new InvalidJwtTokenException("Invalid refresh token. Try to re login.");
         }
 
@@ -92,10 +92,5 @@ public class RefreshTokenAuthStrategy implements AuthStrategy {
             .accessToken(jwtService.generateAccessToken(userId))
             .refreshToken(jwtService.generateRefreshToken(userId))
             .build();
-    }
-
-    private boolean passwordChangedAfterTokenIssued(IdentifiableUserDetails userDetails, JwtSummary token) {
-        return userDetails.getLastPasswordChangedAt() != null &&
-            userDetails.getLastPasswordChangedAt().isAfter(token.getIssuedAt());
     }
 }

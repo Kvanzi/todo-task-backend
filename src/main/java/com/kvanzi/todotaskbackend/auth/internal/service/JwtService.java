@@ -1,12 +1,11 @@
 package com.kvanzi.todotaskbackend.auth.internal.service;
 
-import com.kvanzi.todotaskbackend.auth.internal.dto.JwtSummary;
+import com.kvanzi.todotaskbackend.auth.api.dto.JwtSummary;
 import com.kvanzi.todotaskbackend.auth.internal.entity.JwtToken;
-import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
+import com.kvanzi.todotaskbackend.auth.api.dto.JwtTokenType;
 import com.kvanzi.todotaskbackend.auth.internal.properties.JwtProperties;
 import com.kvanzi.todotaskbackend.auth.internal.repository.JwtTokenRepository;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SignatureException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,6 +1,5 @@
-package com.kvanzi.todotaskbackend.auth.internal.dto;
+package com.kvanzi.todotaskbackend.auth.api.dto;
 
-import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Value;
@@ -18,4 +17,8 @@ public class JwtSummary {
     @NonNull
     Instant issuedAt;
     boolean expired;
+
+    public boolean passwordChangedAfterTokenIssued(@Nullable Instant lastPasswordChangedAt) {
+        return lastPasswordChangedAt != null && lastPasswordChangedAt.isAfter(this.getIssuedAt());
+    }
 }

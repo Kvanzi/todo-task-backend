@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -34,8 +35,9 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         // same as cache-control but for HTTP/1.0 when cache-control for HTTP/1.1
         response.setHeader(HttpHeaders.PRAGMA, "no-cache");
 
-        String message = "Authentication required to access this resource.";
-        boolean expected = authException instanceof JwtTokenException;
+        String message = "Full authentication is required to access this resource.";
+        boolean expected =
+            authException instanceof JwtTokenException || authException instanceof InsufficientAuthenticationException;
 
         UUID errorId = null;
         if (expected) {

@@ -2,7 +2,7 @@ package com.kvanzi.todotaskbackend.auth.internal.controller;
 
 import com.kvanzi.todotaskbackend.auth.internal.dto.CreateTokensRequest;
 import com.kvanzi.todotaskbackend.auth.internal.dto.CreateTokensResponse;
-import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
+import com.kvanzi.todotaskbackend.auth.api.dto.JwtTokenType;
 import com.kvanzi.todotaskbackend.auth.internal.properties.JwtProperties;
 import com.kvanzi.todotaskbackend.auth.internal.service.AuthService;
 import com.kvanzi.todotaskbackend.auth.internal.service.JwtService;

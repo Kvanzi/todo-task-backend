@@ -1,6 +1,6 @@
 package com.kvanzi.todotaskbackend.auth.internal.entity;
 
-import com.kvanzi.todotaskbackend.auth.internal.enumeration.JwtTokenType;
+import com.kvanzi.todotaskbackend.auth.api.dto.JwtTokenType;
 import com.kvanzi.todotaskbackend.shared.persistence.BaseEntity;
 import jakarta.persistence.*;
 import java.time.Instant;

@@ -1,6 +1,7 @@
 package com.kvanzi.todotaskbackend.app.configuration;
 
 import static org.springframework.http.HttpMethod.*;
+import com.kvanzi.todotaskbackend.app.security.JwtAuthenticationFilter;
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfiguration {
@@ -27,7 +29,9 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEntryPoint authEntryPoint, AccessDeniedHandler accessDeniedHandler) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEntryPoint authEntryPoint,
+                                                   AccessDeniedHandler accessDeniedHandler,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter) {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(AbstractHttpConfigurer::disable)
@@ -43,6 +47,10 @@ public class SecurityConfiguration {
                 .requestMatchers(DELETE, "/api/auth/tokens/current").permitAll()
                 .requestMatchers(GET, "/api/users/me").hasRole(Role.USER.name())
                 .anyRequest().hasRole(Role.ADMIN.name())
+            )
+            .addFilterBefore(
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class
             )
             .build();
     }

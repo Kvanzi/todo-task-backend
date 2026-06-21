@@ -46,6 +46,7 @@ public class SecurityConfiguration {
                 .requestMatchers(POST, "/api/users", "/api/auth/tokens").permitAll()
                 .requestMatchers(DELETE, "/api/auth/tokens/current").permitAll()
                 .requestMatchers(GET, "/api/users/me").hasRole(Role.USER.name())
+                .requestMatchers(GET, "/api/users").permitAll()
                 .anyRequest().hasRole(Role.ADMIN.name())
             )
             .addFilterBefore(

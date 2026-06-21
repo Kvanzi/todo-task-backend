@@ -1,6 +1,7 @@
 package com.kvanzi.todotaskbackend.user.internal.controller;
 
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
+import com.kvanzi.todotaskbackend.shared.dto.PageResponse;
 import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetails;
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
@@ -8,9 +9,14 @@ import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +58,38 @@ public class UserController {
         return HttpApiResponse.<PrivateUserSummary>ok()
             .data(userSummary)
             .build();
+    }
+
+
+    @GetMapping
+    public ResponseEntity<@NonNull HttpApiResponse<PageResponse<?>, Void>> getUsers(
+        @RequestParam(name = "pageNumber", defaultValue = "0")
+        @Min(value = 0, message = "The page number parameter must be no less than {value}.")
+        @Max(value = 500, message = "The page number parameter must be no more than {value}.")
+        int pageNumber,
+
+        @RequestParam(name = "pageSize", defaultValue = "15")
+        @Min(value = 1, message = "The page size parameter must be no less than {value}.")
+        @Max(value = 50, message = "The page size parameter must be no more than {value}.")
+        int pageSize,
+
+        @Nullable @AuthenticationPrincipal IdentifiableUserDetails userDetails
+    ) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        PageResponse<?> response = isAdmin(userDetails)
+            ? PageResponse.from(userService.getPrivateUsers(pageable))
+            : PageResponse.from(userService.getPublicUsers(pageable));
+
+        return HttpApiResponse.<PageResponse<?>>ok()
+            .data(response)
+            .build();
+    }
+
+    private boolean isAdmin(@Nullable IdentifiableUserDetails userDetails) {
+        if (userDetails == null) {
+            return false;
+        }
+        return userDetails.getAuthorities().stream()
+            .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
     }
 }

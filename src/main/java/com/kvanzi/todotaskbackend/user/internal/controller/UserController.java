@@ -6,12 +6,14 @@ import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetails;
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
+import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.net.URI;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -82,6 +84,16 @@ public class UserController {
 
         return HttpApiResponse.<PageResponse<?>>ok()
             .data(response)
+            .build();
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<@NonNull HttpApiResponse<PrivateUserSummary, Void>> updateMe(
+        @NonNull @AuthenticationPrincipal(expression = "id") UUID userId,
+        @Valid @RequestBody UpdateUserRequest updateRequest) {
+        PrivateUserSummary updatedUser = userService.updateUser(userId, updateRequest);
+        return HttpApiResponse.<PrivateUserSummary>ok()
+            .data(updatedUser)
             .build();
     }
 

@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -30,8 +31,13 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         // same as cache-control but for HTTP/1.0 when cache-control for HTTP/1.1
         response.setHeader(HttpHeaders.PRAGMA, "no-cache");
 
+        String message = "Access denied";
+        if (accessDeniedException instanceof CsrfException csrfException) {
+            message = csrfException.getMessage();
+        }
+
         response.getWriter().write(mapper.writeValueAsString(
-            HttpApiResponse.of("Access denied", null, null)
+            HttpApiResponse.of(message, null, null)
         ));
         response.getWriter().flush();
     }

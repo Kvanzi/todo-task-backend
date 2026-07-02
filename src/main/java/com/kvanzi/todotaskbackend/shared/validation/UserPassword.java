@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @ReportAsSingleViolation
 @Pattern(
-    regexp = "^(?=[^A-Z]*+[A-Z])(?=[^a-z]*+[a-z])(?=\\D*+\\d)(?=[^#?!@$%^&*-]*+[#?!@$%^&*-]).{8,72}$"
+    regexp = "^(?=[^A-Z]*+[A-Z])(?=[^a-z]*+[a-z])(?=\\D*+\\d).{8,72}$"
 )
 @Documented
 @Constraint(validatedBy = {})

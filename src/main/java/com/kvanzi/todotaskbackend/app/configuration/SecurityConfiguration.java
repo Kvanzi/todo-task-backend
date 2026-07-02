@@ -33,10 +33,13 @@ public class SecurityConfiguration {
                                                    AccessDeniedHandler accessDeniedHandler,
                                                    JwtAuthenticationFilter jwtAuthenticationFilter,
                                                    CorsConfigurationSource corsConfigurationSource) {
+        var csrfTokenRequestHandler = new CsrfTokenRequestAttributeHandler();
+        csrfTokenRequestHandler.setCsrfRequestAttributeName(null);
+
         return http
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                .csrfTokenRequestHandler(csrfTokenRequestHandler)
             )
             .cors(cors -> cors
                 .configurationSource(corsConfigurationSource)

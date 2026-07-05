@@ -27,6 +27,7 @@ Table tasks {
   version BIGINT [not null, default: 0]
   name VARCHAR [not null]
   priority VARCHAR [not null, note: "CHECK (priority IN ('LOW', 'MEDIUM', 'HIGH'))"]
+  priority_weight SMALLINT [not null]
   state VARCHAR [not null, note: "CHECK (state IN ('TODO', 'IN_PROGRESS', 'DONE'))"]
   owner_id UUID [not null]
   created_at TIMESTAMPTZ [not null, default: `now()`]

@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-tasks-table
+      author: Kvanzi
+      changes:
+        - createTable:
+            tableName: todo_tasks
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: '0'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority_weight
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: state
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+
+        - createIndex:
+            tableName: todo_tasks
+            indexName: idx_todo_task_owner_id_sort_created_at
+            columns:
+              - column:
+                  name: owner_id
+              - column:
+                  name: created_at
+                  descending: true
+
+        - createIndex:
+            tableName: todo_tasks
+            indexName: idx_todo_task_owner_id_sort_priority_weight
+            columns:
+              - column:
+                  name: owner_id
+              - column:
+                  name: priority_weight
+                  descending: true
+
+        - sql:
+            sql: >
+              ALTER TABLE todo_tasks ADD CONSTRAINT todo_task_state_check_constraint CHECK (state IN ('TODO', 'IN_PROGRESS', 'DONE'));
+              ALTER TABLE todo_tasks ADD CONSTRAINT todo_task_priority_check_constraint CHECK (state IN ('LOW', 'MEDIUM', 'HIGH'));
+
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE todo_tasks DROP CONSTRAINT todo_task_state_check_constraint;
+              ALTER TABLE todo_tasks DROP CONSTRAINT todo_task_priority_check_constraint;
+        - dropTable:
+            tableName: todo_tasks

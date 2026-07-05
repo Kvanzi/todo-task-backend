@@ -85,3 +85,31 @@ databaseChangeLog:
               ALTER TABLE todo_tasks DROP CONSTRAINT todo_task_priority_check_constraint;
         - dropTable:
             tableName: todo_tasks
+
+  - changeSet:
+      id: create-tasks-collaborators-table
+      author: Kvanzi
+      changes:
+        - createTable:
+            tableName: todo_tasks_collaborators
+            columns:
+              - column:
+                  name: task_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    references: todo_tasks(id)
+                    foreignKeyName: fk_todo_tasks_collaborators_task_id
+              - column:
+                  name: collaborator_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createIndex:
+            indexName: idx_todo_tasks_collaborators_collaborator_id
+            tableName: todo_tasks_collaborators
+            columns:
+              - column:
+                  name: collaborator_id

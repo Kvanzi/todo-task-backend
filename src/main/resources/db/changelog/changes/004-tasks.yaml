@@ -113,3 +113,18 @@ databaseChangeLog:
             columns:
               - column:
                   name: collaborator_id
+
+  - changeSet:
+      id: fix-todo-task-priority-check-constraint
+      author: Kvanzi
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE todo_tasks DROP CONSTRAINT todo_task_priority_check_constraint;
+              ALTER TABLE todo_tasks ADD CONSTRAINT todo_task_priority_check_constraint CHECK (priority IN ('LOW', 'MEDIUM', 'HIGH'));
+
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE todo_tasks DROP CONSTRAINT todo_task_priority_check_constraint;
+              ALTER TABLE todo_tasks ADD CONSTRAINT todo_task_priority_check_constraint CHECK (state IN ('LOW', 'MEDIUM', 'HIGH'));

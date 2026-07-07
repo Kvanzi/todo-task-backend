@@ -5,6 +5,7 @@ import com.kvanzi.todotaskbackend.auth.api.exception.InvalidCredentialsException
 import com.kvanzi.todotaskbackend.auth.api.exception.MissingRefreshTokenException;
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
+import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -139,8 +140,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingRefreshTokenException.class)
-    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleMissingRefreshTokenException(MissingRefreshTokenException e) {
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleMissingRefreshTokenException(
+        MissingRefreshTokenException e) {
         return HttpApiResponse.<Void>unauthorized()
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleUserNotFoundException(UserNotFoundException e) {
+        return HttpApiResponse.<Void>notFound()
             .message(e.getMessage())
             .build();
     }

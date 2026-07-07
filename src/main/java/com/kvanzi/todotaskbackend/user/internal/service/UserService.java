@@ -11,6 +11,7 @@ import com.kvanzi.todotaskbackend.user.internal.entity.User;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.repository.UserRepository;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +81,20 @@ public class UserService {
         return saveAndFlushSafely(() -> userMapper.toPrivateUserSummary(userRepository.saveAndFlush(user)));
     }
 
+    public boolean existsById(@NonNull UUID id) {
+        return userRepository.existsById(id);
+    }
+
+    public boolean existsAllByIds(@NonNull Set<UUID> ids) {
+        if (ids.isEmpty()) {
+            return true;
+        }
+        return userRepository.countByIdIn(ids) == ids.size();
+    }
+
     /**
+     * Ensures the updated email address is not already in use by another user.
+     *
      * @throws EmailTakenException when email is taken by another user.
      */
     private void validateEmailUniquenessOrThrow(@NonNull String oldEmail, @NonNull String newEmail) {

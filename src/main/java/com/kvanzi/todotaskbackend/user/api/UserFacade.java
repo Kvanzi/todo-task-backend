@@ -4,6 +4,7 @@ import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetails;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.service.UserService;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -23,5 +24,13 @@ public class UserFacade {
     public Optional<IdentifiableUserDetails> findSecurityUserDetailsById(@NonNull UUID id) {
         return userService.findUserById(id)
             .map(userMapper::toIdentifiableUserDetails);
+    }
+
+    public boolean existsById(@NonNull UUID id) {
+        return userService.existsById(id);
+    }
+
+    public boolean existsAllByIds(@NonNull Set<@NonNull UUID> ids) {
+        return userService.existsAllByIds(ids);
     }
 }

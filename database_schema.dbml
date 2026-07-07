@@ -22,7 +22,7 @@ Table user_roles {
 
 // === TASKS MODULE ===
 
-Table tasks {
+Table todo_tasks {
   id UUID [pk] // hibernate side generation UUIDv7
   version BIGINT [not null, default: 0]
   name VARCHAR [not null]
@@ -40,8 +40,8 @@ Table tasks {
   }
 }
 
-Table task_collaborators {
-  task_id UUID [pk, not null, ref: > tasks.id]
+Table todo_task_collaborators {
+  task_id UUID [pk, not null, ref: > todo_tasks.id]
   user_id UUID [pk, not null]
 }
 

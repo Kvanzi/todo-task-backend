@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class AuthFacade {
     private final JwtService jwtService;
 
-     public @NonNull JwtSummary extractJwtSummary(@NonNull String token) {
+    public @NonNull JwtSummary extractJwtSummary(@NonNull String token) {
         return jwtService.extractJwtSummary(token);
-     }
+    }
 }

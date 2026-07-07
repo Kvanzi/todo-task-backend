@@ -35,6 +35,8 @@ public class RefreshTokenAuthStrategy implements AuthStrategy {
     }
 
     /**
+     * Creates access & refresh tokens by refreshToken.
+     *
      * @throws MissingRefreshTokenException when is refresh token is missing.
      * @throws InvalidJwtTokenException     when trying to extract token and token is malformed or have a bad structure
      * @throws InvalidJwtTokenTypeException when token type is not REFRESH

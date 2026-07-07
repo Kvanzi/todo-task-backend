@@ -93,6 +93,8 @@ public class UserService {
     }
 
     /**
+     * Ensures the updated email address is not already in use by another user.
+     *
      * @throws EmailTakenException when email is taken by another user.
      */
     private void validateEmailUniquenessOrThrow(@NonNull String oldEmail, @NonNull String newEmail) {

@@ -1,5 +1,6 @@
 package com.kvanzi.todotaskbackend.todotask.internal.service;
 
+import com.kvanzi.todotaskbackend.todotask.api.exception.OwnerCannotBeCollaboratorException;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.CreateToDoTaskRequest;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.Role;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.ToDoTaskSortField;
@@ -42,6 +43,11 @@ public class ToDoTaskService {
         }
 
         Set<UUID> collaboratorIds = request.getCollaboratorIds();
+
+        if (collaboratorIds.contains(ownerId)) {
+            throw new OwnerCannotBeCollaboratorException("Task owner cannot be explicitly added as a collaborator");
+        }
+
         if (!collaboratorIds.isEmpty() && !userFacade.existsAllByIds(collaboratorIds)) {
             throw new UserNotFoundException("One or more collaborators not found.");
         }

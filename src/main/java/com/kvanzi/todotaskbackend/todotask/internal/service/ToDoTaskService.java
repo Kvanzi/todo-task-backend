@@ -1,19 +1,33 @@
 package com.kvanzi.todotaskbackend.todotask.internal.service;
 
 import com.kvanzi.todotaskbackend.todotask.internal.dto.CreateToDoTaskRequest;
+import com.kvanzi.todotaskbackend.todotask.internal.dto.Role;
+import com.kvanzi.todotaskbackend.todotask.internal.dto.ToDoTaskSortField;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.ToDoTaskSummary;
+import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskPriority;
+import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskState;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.ToDoTask;
 import com.kvanzi.todotaskbackend.todotask.internal.mapper.ToDoTaskMapper;
 import com.kvanzi.todotaskbackend.todotask.internal.repository.ToDoTaskRepository;
+import com.kvanzi.todotaskbackend.todotask.internal.repository.ToDoTaskSpecifications;
+import com.kvanzi.todotaskbackend.shared.utility.SortSanitizer;
 import com.kvanzi.todotaskbackend.user.api.UserFacade;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ToDoTaskService {
@@ -37,5 +51,29 @@ public class ToDoTaskService {
         return toDoTaskMapper.mapToSummary(
             toDoTaskRepository.save(task)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<@NonNull ToDoTaskSummary> findTasks(
+        @NonNull UUID userId,
+        @NonNull Role role,
+        @Nullable TaskState state,
+        @Nullable TaskPriority priority,
+        @NonNull Pageable pageable
+    ) {
+        Sort safeSort = SortSanitizer.sanitize(
+            pageable.getSort(),
+            name -> ToDoTaskSortField.fromPublicName(name).getProperty()
+        );
+        Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
+        log.info("{}", safePageable);
+
+        Specification<@NonNull ToDoTask> spec = Specification
+            .where(ToDoTaskSpecifications.hasRole(userId, role))
+            .and(ToDoTaskSpecifications.hasState(state))
+            .and(ToDoTaskSpecifications.hasPriority(priority));
+
+        return toDoTaskRepository.findAll(spec, safePageable)
+            .map(toDoTaskMapper::mapToSummary);
     }
 }

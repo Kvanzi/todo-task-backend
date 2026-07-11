@@ -4,6 +4,8 @@ import com.kvanzi.todotaskbackend.auth.api.exception.CredentialsMissingException
 import com.kvanzi.todotaskbackend.auth.api.exception.InvalidCredentialsException;
 import com.kvanzi.todotaskbackend.auth.api.exception.MissingRefreshTokenException;
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
+import com.kvanzi.todotaskbackend.todotask.api.exception.InvalidSortPropertyException;
+import com.kvanzi.todotaskbackend.todotask.api.exception.OwnerCannotBeCollaboratorException;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.*;
@@ -150,6 +152,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleUserNotFoundException(UserNotFoundException e) {
         return HttpApiResponse.<Void>notFound()
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(InvalidSortPropertyException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleInvalidSortPropertyException(
+        InvalidSortPropertyException e) {
+        return HttpApiResponse.<Void>badRequest()
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(OwnerCannotBeCollaboratorException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleOwnerCannotBeCollaboratorException(
+        OwnerCannotBeCollaboratorException e) {
+        return HttpApiResponse.<Void>badRequest()
             .message(e.getMessage())
             .build();
     }

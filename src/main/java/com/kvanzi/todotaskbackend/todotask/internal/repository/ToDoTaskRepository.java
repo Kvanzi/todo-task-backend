@@ -4,8 +4,10 @@ import com.kvanzi.todotaskbackend.todotask.internal.entity.ToDoTask;
 import java.util.UUID;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ToDoTaskRepository extends JpaRepository<@NonNull ToDoTask, @NonNull UUID> {
+public interface ToDoTaskRepository
+    extends JpaRepository<@NonNull ToDoTask, @NonNull UUID>, JpaSpecificationExecutor<@NonNull ToDoTask> {
 }

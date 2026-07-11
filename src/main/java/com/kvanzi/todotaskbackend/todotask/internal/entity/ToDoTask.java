@@ -60,8 +60,12 @@ public class ToDoTask extends BaseEntity {
     @Column(name = "collaborator_id", nullable = false)
     private Set<UUID> collaboratorIds = new HashSet<>();
 
-    public void setPriority(TaskPriority priority) {
-        this.priority = priority;
-        this.priorityWeight = priority.getWeight();
+    @PrePersist
+    @PreUpdate
+    protected void syncPriorityWeight() {
+        if (priority == null) {
+            return;
+        }
+        priorityWeight = priority.getWeight();
     }
 }

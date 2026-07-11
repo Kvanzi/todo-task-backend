@@ -54,7 +54,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(req -> req
                 .requestMatchers(POST, "/api/users", "/api/auth/tokens").permitAll()
                 .requestMatchers(DELETE, "/api/auth/tokens/current").permitAll()
-                .requestMatchers(GET, "/api/users/me").hasRole(Role.USER.name())
+                .requestMatchers(GET, "/api/users/me", "/api/todo-tasks").hasRole(Role.USER.name())
                 .requestMatchers(GET, "/api/users").permitAll()
                 .requestMatchers(POST, "/api/todo-tasks").hasRole(Role.USER.name())
                 .anyRequest().hasRole(Role.ADMIN.name())

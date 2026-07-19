@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 @Setter
@@ -59,6 +60,14 @@ public class ToDoTask extends BaseEntity {
     )
     @Column(name = "collaborator_id", nullable = false)
     private Set<UUID> collaboratorIds = new HashSet<>();
+
+    public boolean containsCollaborator(@NonNull UUID userId) {
+        return this.collaboratorIds.contains(userId);
+    }
+
+    public boolean isOwner(@NonNull UUID userId) {
+        return this.getOwnerId().equals(userId);
+    }
 
     @PrePersist
     @PreUpdate

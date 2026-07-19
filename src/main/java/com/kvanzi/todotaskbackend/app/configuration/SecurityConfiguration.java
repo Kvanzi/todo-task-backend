@@ -59,6 +59,7 @@ public class SecurityConfiguration {
                 .requestMatchers(GET, "/api/users/me", "/api/todo-tasks").hasRole(Role.USER.name())
                 .requestMatchers(GET, "/api/users").permitAll()
                 .requestMatchers(POST, "/api/todo-tasks").hasRole(Role.USER.name())
+                .requestMatchers(PUT, "/api/todo-tasks/{taskId}").hasRole(Role.USER.name())
                 .anyRequest().hasRole(Role.ADMIN.name())
             )
             .addFilterBefore(

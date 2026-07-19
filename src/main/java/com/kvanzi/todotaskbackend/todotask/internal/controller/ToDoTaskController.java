@@ -5,6 +5,7 @@ import com.kvanzi.todotaskbackend.shared.dto.PageResponse;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.CreateToDoTaskRequest;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.Role;
 import com.kvanzi.todotaskbackend.todotask.internal.dto.ToDoTaskSummary;
+import com.kvanzi.todotaskbackend.todotask.internal.dto.UpdateToDoTaskRequest;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskPriority;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskState;
 import com.kvanzi.todotaskbackend.todotask.internal.service.ToDoTaskService;
@@ -15,6 +16,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +45,16 @@ public class ToDoTaskController {
     ) {
         Page<@NonNull ToDoTaskSummary> page = toDoTaskService.findTasks(userId, role, state, priority, pageable);
         return ResponseEntity.ok(PageResponse.from(page));
+    }
+
+    @PutMapping("/{taskId}")
+    @PreAuthorize("@toDoTaskSecurityService.isParticipant(#taskId, authentication.principal.id)")
+    public ResponseEntity<@NonNull HttpApiResponse<ToDoTaskSummary, Void>> updateToDoTask(
+        @NonNull @PathVariable("taskId") UUID taskId,
+        @NonNull @Valid @RequestBody UpdateToDoTaskRequest request
+    ) {
+        return HttpApiResponse.<ToDoTaskSummary>ok()
+            .data(toDoTaskService.updateTask(taskId, request))
+            .build();
     }
 }

@@ -1,17 +1,15 @@
 package com.kvanzi.todotaskbackend.todotask.internal.service;
 
+import com.kvanzi.todotaskbackend.shared.utility.SortSanitizer;
 import com.kvanzi.todotaskbackend.todotask.api.exception.OwnerCannotBeCollaboratorException;
-import com.kvanzi.todotaskbackend.todotask.internal.dto.CreateToDoTaskRequest;
-import com.kvanzi.todotaskbackend.todotask.internal.dto.Role;
-import com.kvanzi.todotaskbackend.todotask.internal.dto.ToDoTaskSortField;
-import com.kvanzi.todotaskbackend.todotask.internal.dto.ToDoTaskSummary;
+import com.kvanzi.todotaskbackend.todotask.api.exception.ToDoTaskNotFoundException;
+import com.kvanzi.todotaskbackend.todotask.internal.dto.*;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskPriority;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskState;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.ToDoTask;
 import com.kvanzi.todotaskbackend.todotask.internal.mapper.ToDoTaskMapper;
 import com.kvanzi.todotaskbackend.todotask.internal.repository.ToDoTaskRepository;
 import com.kvanzi.todotaskbackend.todotask.internal.repository.ToDoTaskSpecifications;
-import com.kvanzi.todotaskbackend.shared.utility.SortSanitizer;
 import com.kvanzi.todotaskbackend.user.api.UserFacade;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.Set;
@@ -81,5 +79,19 @@ public class ToDoTaskService {
 
         return toDoTaskRepository.findAll(spec, safePageable)
             .map(toDoTaskMapper::mapToSummary);
+    }
+
+    @Transactional
+    public ToDoTaskSummary updateTask(@NonNull UUID taskId, @NonNull UpdateToDoTaskRequest request) {
+        ToDoTask task = toDoTaskRepository.findById(taskId)
+            .orElseThrow(() -> new ToDoTaskNotFoundException("Task with id '%s' not found".formatted(taskId)));
+
+        task.setName(request.getName());
+        task.setPriority(request.getPriority());
+        task.setState(request.getState());
+
+        return toDoTaskMapper.mapToSummary(
+            toDoTaskRepository.save(task)
+        );
     }
 }

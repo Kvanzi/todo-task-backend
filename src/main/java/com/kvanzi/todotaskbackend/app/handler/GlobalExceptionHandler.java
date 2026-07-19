@@ -6,6 +6,7 @@ import com.kvanzi.todotaskbackend.auth.api.exception.MissingRefreshTokenExceptio
 import com.kvanzi.todotaskbackend.shared.api.HttpApiResponse;
 import com.kvanzi.todotaskbackend.todotask.api.exception.InvalidSortPropertyException;
 import com.kvanzi.todotaskbackend.todotask.api.exception.OwnerCannotBeCollaboratorException;
+import com.kvanzi.todotaskbackend.todotask.api.exception.ToDoTaskNotFoundException;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.*;
@@ -149,8 +150,8 @@ public class GlobalExceptionHandler {
             .build();
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleUserNotFoundException(UserNotFoundException e) {
+    @ExceptionHandler({UserNotFoundException.class, ToDoTaskNotFoundException.class})
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleEntityNotFoundException(RuntimeException e) {
         return HttpApiResponse.<Void>notFound()
             .message(e.getMessage())
             .build();

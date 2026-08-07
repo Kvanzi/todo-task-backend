@@ -1,6 +1,7 @@
 package com.kvanzi.todotaskbackend.user.internal.service;
 
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
+import com.kvanzi.todotaskbackend.user.api.exception.LastAdminCannotBeDeletedException;
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
@@ -10,6 +11,7 @@ import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.entity.User;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -90,6 +92,26 @@ public class UserService {
             return true;
         }
         return userRepository.countByIdIn(ids) == ids.size();
+    }
+
+    @Transactional
+    public void deleteUser(@NonNull UUID userId) {
+        List<User> admins = userRepository.lockUsersWithRole(Role.ADMIN);
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException("User with id '%s' not found.".formatted(userId)));
+
+        boolean isAdmin = admins.stream()
+            .anyMatch(a -> {
+                assert a.getId() != null;
+                return a.getId().equals(userId);
+            });
+
+        if (isAdmin && admins.size() == 1) {
+            throw new LastAdminCannotBeDeletedException("Cannot delete the last admin account.");
+        }
+
+        userRepository.delete(user);
     }
 
     /**

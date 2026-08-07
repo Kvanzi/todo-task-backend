@@ -8,6 +8,7 @@ import com.kvanzi.todotaskbackend.todotask.api.exception.InvalidSortPropertyExce
 import com.kvanzi.todotaskbackend.todotask.api.exception.OwnerCannotBeCollaboratorException;
 import com.kvanzi.todotaskbackend.todotask.api.exception.ToDoTaskNotFoundException;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
+import com.kvanzi.todotaskbackend.user.api.exception.LastAdminCannotBeDeletedException;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,6 +122,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailTakenException.class)
     public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleEmailTakenException(EmailTakenException e) {
+        return HttpApiResponse.<Void>status(HttpStatus.CONFLICT)
+            .message(e.getMessage())
+            .build();
+    }
+
+    @ExceptionHandler(LastAdminCannotBeDeletedException.class)
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> handleLastAdminCannotBeDeletedException(
+        LastAdminCannotBeDeletedException e) {
         return HttpApiResponse.<Void>status(HttpStatus.CONFLICT)
             .message(e.getMessage())
             .build();

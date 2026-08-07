@@ -19,7 +19,9 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -94,6 +96,15 @@ public class UserController {
         PrivateUserSummary updatedUser = userService.updateUser(userId, updateRequest);
         return HttpApiResponse.<PrivateUserSummary>ok()
             .data(updatedUser)
+            .build();
+    }
+
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> deleteUser(
+        @PathVariable @NonNull UUID userId) {
+        userService.deleteUser(userId);
+        return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
             .build();
     }
 

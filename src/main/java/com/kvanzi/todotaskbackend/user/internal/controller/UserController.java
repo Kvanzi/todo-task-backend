@@ -5,6 +5,7 @@ import com.kvanzi.todotaskbackend.shared.dto.PageResponse;
 import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetails;
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
+import com.kvanzi.todotaskbackend.user.internal.dto.AdminUpdateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserRequest;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
@@ -105,6 +106,16 @@ public class UserController {
         @PathVariable @NonNull UUID userId) {
         userService.deleteUser(userId);
         return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
+            .build();
+    }
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<@NonNull HttpApiResponse<PrivateUserSummary, Void>> updateUser(
+        @NonNull @PathVariable("userId") UUID userId,
+        @Valid @RequestBody AdminUpdateUserRequest updateRequest) {
+        return HttpApiResponse.<PrivateUserSummary>ok()
+            .data(userService.updateUser(userId, updateRequest))
             .build();
     }
 

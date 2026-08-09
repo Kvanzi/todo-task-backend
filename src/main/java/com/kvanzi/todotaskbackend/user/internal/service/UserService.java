@@ -1,13 +1,13 @@
 package com.kvanzi.todotaskbackend.user.internal.service;
 
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
-import com.kvanzi.todotaskbackend.user.api.exception.LastAdminCannotBeDeletedException;
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
+import com.kvanzi.todotaskbackend.user.api.exception.LastAdminException;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
-import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserRequest;
+import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserStrategy;
 import com.kvanzi.todotaskbackend.user.internal.entity.User;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.repository.UserRepository;
@@ -73,9 +73,13 @@ public class UserService {
     }
 
     @Transactional
-    public @NonNull PrivateUserSummary updateUser(@NonNull UUID userId, @NonNull UpdateUserRequest request) {
+    public @NonNull PrivateUserSummary updateUser(@NonNull UUID userId, @NonNull UpdateUserStrategy request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User with id '%s' not found".formatted(userId)));
+            .orElseThrow(() -> new UserNotFoundException("User with id '%s' not found.".formatted(userId)));
+
+        if (revokesAdminRole(request)) {
+            ensureUserIsNotTheLastAdmin(userId, "Cannot revoke privileges of the last admin account.");
+        }
 
         validateEmailUniquenessOrThrow(user.getEmail(), request.getEmail());
         request.applyTo(user);
@@ -96,20 +100,10 @@ public class UserService {
 
     @Transactional
     public void deleteUser(@NonNull UUID userId) {
-        List<User> admins = userRepository.lockUsersWithRole(Role.ADMIN);
-
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException("User with id '%s' not found.".formatted(userId)));
 
-        boolean isAdmin = admins.stream()
-            .anyMatch(a -> {
-                assert a.getId() != null;
-                return a.getId().equals(userId);
-            });
-
-        if (isAdmin && admins.size() == 1) {
-            throw new LastAdminCannotBeDeletedException("Cannot delete the last admin account.");
-        }
+        ensureUserIsNotTheLastAdmin(userId, "Cannot delete the last admin account.");
 
         userRepository.delete(user);
     }
@@ -142,6 +136,23 @@ public class UserService {
                 }
             }
             throw e;
+        }
+    }
+
+    private boolean revokesAdminRole(@NonNull UpdateUserStrategy request) {
+        return request.getRolesToAssign()
+            .map(roles -> !roles.contains(Role.ADMIN))
+            .orElse(false);
+    }
+
+    private void ensureUserIsNotTheLastAdmin(@NonNull UUID userId, @NonNull String message) {
+        List<User> admins = userRepository.lockUsersWithRole(Role.ADMIN);
+
+        boolean isAdmin = admins.stream()
+            .anyMatch(admin -> userId.equals(admin.getId()));
+
+        if (isAdmin && admins.size() == 1) {
+            throw new LastAdminException(message);
         }
     }
 }

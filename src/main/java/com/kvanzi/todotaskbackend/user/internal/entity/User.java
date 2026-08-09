@@ -1,7 +1,7 @@
 package com.kvanzi.todotaskbackend.user.internal.entity;
 
-import com.kvanzi.todotaskbackend.shared.persistence.BaseEntity;
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
+import com.kvanzi.todotaskbackend.shared.persistence.BaseEntity;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Collections;
@@ -79,5 +79,10 @@ public class User extends BaseEntity {
     public boolean hasRole(@NonNull Role role) {
         Objects.requireNonNull(role, "Role cannot be null");
         return this.roles.contains(role);
+    }
+
+    public void replaceRoles(@NonNull Set<Role> newRoles) {
+        this.roles.clear();
+        this.roles.addAll(newRoles);
     }
 }

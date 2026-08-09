@@ -7,7 +7,7 @@ import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import com.kvanzi.todotaskbackend.user.api.exception.LastAdminException;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import com.kvanzi.todotaskbackend.user.internal.dto.CreateUserRequest;
-import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserRequest;
+import com.kvanzi.todotaskbackend.user.internal.dto.UpdateUserStrategy;
 import com.kvanzi.todotaskbackend.user.internal.entity.User;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.repository.UserRepository;
@@ -73,9 +73,13 @@ public class UserService {
     }
 
     @Transactional
-    public @NonNull PrivateUserSummary updateUser(@NonNull UUID userId, @NonNull UpdateUserRequest request) {
+    public @NonNull PrivateUserSummary updateUser(@NonNull UUID userId, @NonNull UpdateUserStrategy request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User with id '%s' not found".formatted(userId)));
+            .orElseThrow(() -> new UserNotFoundException("User with id '%s' not found.".formatted(userId)));
+
+        if (revokesAdminRole(request)) {
+            ensureUserIsNotTheLastAdmin(userId, "Cannot revoke privileges of the last admin account.");
+        }
 
         validateEmailUniquenessOrThrow(user.getEmail(), request.getEmail());
         request.applyTo(user);
@@ -133,6 +137,12 @@ public class UserService {
             }
             throw e;
         }
+    }
+
+    private boolean revokesAdminRole(@NonNull UpdateUserStrategy request) {
+        return request.getRolesToAssign()
+            .map(roles -> !roles.contains(Role.ADMIN))
+            .orElse(false);
     }
 
     private void ensureUserIsNotTheLastAdmin(@NonNull UUID userId, @NonNull String message) {

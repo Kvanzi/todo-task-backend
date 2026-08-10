@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -55,6 +56,15 @@ public class ToDoTaskController {
     ) {
         return HttpApiResponse.<ToDoTaskSummary>ok()
             .data(toDoTaskService.updateTask(taskId, request))
+            .build();
+    }
+
+    @DeleteMapping("/{taskId}")
+    @PreAuthorize("@toDoTaskSecurityService.isOwner(#taskId, authentication.principal.id)")
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> deleteToDoTask(
+        @NonNull @PathVariable("taskId") UUID taskId) {
+        toDoTaskService.deleteTask(taskId);
+        return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
             .build();
     }
 }

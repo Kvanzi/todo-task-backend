@@ -94,4 +94,11 @@ public class ToDoTaskService {
             toDoTaskRepository.save(task)
         );
     }
+
+    @Transactional
+    public void deleteTask(@NonNull UUID taskId) {
+        ToDoTask task = toDoTaskRepository.findById(taskId)
+            .orElseThrow(() -> new ToDoTaskNotFoundException("Task with id '%s' not found.".formatted(taskId)));
+        toDoTaskRepository.delete(task);
+    }
 }

@@ -18,4 +18,11 @@ public class ToDoTaskSecurityService {
             .map(task -> task.isOwner(userId) || task.containsCollaborator(userId))
             .orElse(false);
     }
+
+    @Transactional(readOnly = true)
+    public boolean isOwner(@NonNull UUID taskId, @NonNull UUID userId) {
+        return toDoTaskRepository.findById(taskId)
+            .map(task -> task.isOwner(userId))
+            .orElse(false);
+    }
 }

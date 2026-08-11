@@ -35,6 +35,9 @@ public class ToDoTaskService {
     private final ToDoTaskMapper toDoTaskMapper;
     private final UserFacade userFacade;
 
+    private static final String OWNER_CANNOT_BE_COLLABORATOR_MESSAGE =
+        "Task owner cannot be explicitly added as a collaborator";
+
     @Transactional
     public ToDoTaskSummary createTask(@NonNull UUID ownerId, @NonNull CreateToDoTaskRequest request) {
         if (!userFacade.existsById(ownerId)) {
@@ -44,7 +47,7 @@ public class ToDoTaskService {
         Set<UUID> collaboratorIds = request.getCollaboratorIds();
 
         if (collaboratorIds.contains(ownerId)) {
-            throw new OwnerCannotBeCollaboratorException("Task owner cannot be explicitly added as a collaborator");
+            throw new OwnerCannotBeCollaboratorException(OWNER_CANNOT_BE_COLLABORATOR_MESSAGE);
         }
 
         if (!collaboratorIds.isEmpty() && !userFacade.existsAllByIds(collaboratorIds)) {
@@ -115,5 +118,22 @@ public class ToDoTaskService {
         Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
         return userFacade.getPublicUsersByIds(task.getCollaboratorIds(), safePageable);
+    }
+
+    @Transactional
+    public void addCollaborator(@NonNull UUID taskId, @NonNull UUID collaboratorId) {
+        ToDoTask task = toDoTaskRepository.findById(taskId)
+            .orElseThrow(() -> new ToDoTaskNotFoundException("Task with id '%s' not found.".formatted(taskId)));
+
+        if (task.isOwner(collaboratorId)) {
+            throw new OwnerCannotBeCollaboratorException(OWNER_CANNOT_BE_COLLABORATOR_MESSAGE);
+        }
+
+        if (!userFacade.existsById(collaboratorId)) {
+            throw new UserNotFoundException("User with id '%s' not found.".formatted(collaboratorId));
+        }
+
+        task.addCollaborator(collaboratorId);
+        toDoTaskRepository.save(task);
     }
 }

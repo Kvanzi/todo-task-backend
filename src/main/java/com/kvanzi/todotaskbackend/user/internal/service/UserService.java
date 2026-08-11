@@ -108,6 +108,16 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public @NonNull Page<@NonNull PublicUserSummary> getPublicUsersByIds(@NonNull Set<@NonNull UUID> ids,
+                                                                         @NonNull Pageable pageable) {
+        if (ids.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        return userRepository.findAllByIdIn(ids, pageable)
+            .map(userMapper::toPublicUserSummary);
+    }
+
     /**
      * Ensures the updated email address is not already in use by another user.
      *

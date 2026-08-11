@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,6 @@ public interface UserRepository extends JpaRepository<@NonNull User, @NonNull UU
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from User u join u.roles r where r = :role order by u.id")
     List<User> lockUsersWithRole(@Param("role") Role role);
+
+    @NonNull Page<@NonNull User> findAllByIdIn(@NonNull Set<@NonNull UUID> ids, @NonNull Pageable pageable);
 }

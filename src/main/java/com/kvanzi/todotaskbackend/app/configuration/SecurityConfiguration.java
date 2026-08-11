@@ -60,7 +60,8 @@ public class SecurityConfiguration {
                 .requestMatchers(GET, "/api/users/me", "/api/todo-tasks", "/api/todo-tasks/{taskId}/collaborators")
                 .hasRole(Role.USER.name())
                 .requestMatchers(POST, "/api/todo-tasks").hasRole(Role.USER.name())
-                .requestMatchers(PUT, "/api/todo-tasks/{taskId}", "/api/users/me").hasRole(Role.USER.name())
+                .requestMatchers(PUT, "/api/todo-tasks/{taskId}", "/api/users/me",
+                    "/api/todo-tasks/{taskId}/collaborators/{collaboratorId}").hasRole(Role.USER.name())
                 .requestMatchers(DELETE, "/api/todo-tasks/{taskId}").hasRole(Role.USER.name())
                 .anyRequest().hasRole(Role.ADMIN.name())
             )

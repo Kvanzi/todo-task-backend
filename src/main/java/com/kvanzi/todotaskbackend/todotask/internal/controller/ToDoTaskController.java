@@ -9,6 +9,7 @@ import com.kvanzi.todotaskbackend.todotask.internal.dto.UpdateToDoTaskRequest;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskPriority;
 import com.kvanzi.todotaskbackend.todotask.internal.entity.TaskState;
 import com.kvanzi.todotaskbackend.todotask.internal.service.ToDoTaskService;
+import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -66,5 +67,15 @@ public class ToDoTaskController {
         toDoTaskService.deleteTask(taskId);
         return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
             .build();
+    }
+
+    @GetMapping("/{taskId}/collaborators")
+    @PreAuthorize("@toDoTaskSecurityService.isParticipant(#taskId, authentication.principal.id)")
+    public ResponseEntity<@NonNull PageResponse<PublicUserSummary>> getTaskCollaborators(
+        @NonNull @PathVariable("taskId") UUID taskId,
+        Pageable pageable
+    ) {
+        Page<@NonNull PublicUserSummary> page = toDoTaskService.findCollaborators(taskId, pageable);
+        return ResponseEntity.ok(PageResponse.from(page));
     }
 }

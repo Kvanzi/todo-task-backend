@@ -11,6 +11,7 @@ import com.kvanzi.todotaskbackend.todotask.internal.mapper.ToDoTaskMapper;
 import com.kvanzi.todotaskbackend.todotask.internal.repository.ToDoTaskRepository;
 import com.kvanzi.todotaskbackend.todotask.internal.repository.ToDoTaskSpecifications;
 import com.kvanzi.todotaskbackend.user.api.UserFacade;
+import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
 import java.util.Set;
 import java.util.UUID;
@@ -100,5 +101,19 @@ public class ToDoTaskService {
         ToDoTask task = toDoTaskRepository.findById(taskId)
             .orElseThrow(() -> new ToDoTaskNotFoundException("Task with id '%s' not found.".formatted(taskId)));
         toDoTaskRepository.delete(task);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<@NonNull PublicUserSummary> findCollaborators(@NonNull UUID taskId, @NonNull Pageable pageable) {
+        ToDoTask task = toDoTaskRepository.findById(taskId)
+            .orElseThrow(() -> new ToDoTaskNotFoundException("Task with id '%s' not found.".formatted(taskId)));
+
+        Sort safeSort = SortSanitizer.sanitize(
+            pageable.getSort(),
+            name -> CollaboratorSortField.fromPublicName(name).getProperty()
+        );
+        Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
+
+        return userFacade.getPublicUsersByIds(task.getCollaboratorIds(), safePageable);
     }
 }

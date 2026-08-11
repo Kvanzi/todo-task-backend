@@ -1,6 +1,7 @@
 package com.kvanzi.todotaskbackend.user.api;
 
 import com.kvanzi.todotaskbackend.shared.security.IdentifiableUserDetails;
+import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
 import com.kvanzi.todotaskbackend.user.internal.mapper.UserMapper;
 import com.kvanzi.todotaskbackend.user.internal.service.UserService;
 import java.util.Optional;
@@ -8,6 +9,8 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,5 +35,10 @@ public class UserFacade {
 
     public boolean existsAllByIds(@NonNull Set<@NonNull UUID> ids) {
         return userService.existsAllByIds(ids);
+    }
+
+    public @NonNull Page<@NonNull PublicUserSummary> getPublicUsersByIds(
+        @NonNull Set<@NonNull UUID> ids, @NonNull Pageable pageable) {
+        return userService.getPublicUsersByIds(ids, pageable);
     }
 }

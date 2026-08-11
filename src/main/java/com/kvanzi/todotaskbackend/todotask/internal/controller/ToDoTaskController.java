@@ -78,4 +78,15 @@ public class ToDoTaskController {
         Page<@NonNull PublicUserSummary> page = toDoTaskService.findCollaborators(taskId, pageable);
         return ResponseEntity.ok(PageResponse.from(page));
     }
+
+    @PutMapping("/{taskId}/collaborators/{collaboratorId}")
+    @PreAuthorize("@toDoTaskSecurityService.isOwner(#taskId, authentication.principal.id)")
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> addCollaborator(
+        @NonNull @PathVariable("taskId") UUID taskId,
+        @NonNull @PathVariable("collaboratorId") UUID collaboratorId
+    ) {
+        toDoTaskService.addCollaborator(taskId, collaboratorId);
+        return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
+            .build();
+    }
 }

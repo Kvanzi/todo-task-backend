@@ -78,6 +78,10 @@ public class ToDoTask extends BaseEntity {
         this.collaboratorIds.add(userId);
     }
 
+    public void removeCollaborator(@NonNull UUID userId) {
+        this.collaboratorIds.remove(userId);
+    }
+
     @PrePersist
     @PreUpdate
     protected void syncPriorityWeight() {

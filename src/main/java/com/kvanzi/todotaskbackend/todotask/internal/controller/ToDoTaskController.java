@@ -89,4 +89,15 @@ public class ToDoTaskController {
         return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
             .build();
     }
+
+    @DeleteMapping("/{taskId}/collaborators/{collaboratorId}")
+    @PreAuthorize("@toDoTaskSecurityService.isOwner(#taskId, authentication.principal.id)")
+    public ResponseEntity<@NonNull HttpApiResponse<Void, Void>> removeCollaborator(
+        @NonNull @PathVariable("taskId") UUID taskId,
+        @NonNull @PathVariable("collaboratorId") UUID collaboratorId
+    ) {
+        toDoTaskService.removeCollaborator(taskId, collaboratorId);
+        return HttpApiResponse.<Void>status(HttpStatus.NO_CONTENT)
+            .build();
+    }
 }

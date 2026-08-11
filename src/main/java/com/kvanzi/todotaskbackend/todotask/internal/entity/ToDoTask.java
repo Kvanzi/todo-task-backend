@@ -2,6 +2,7 @@ package com.kvanzi.todotaskbackend.todotask.internal.entity;
 
 import com.kvanzi.todotaskbackend.shared.persistence.BaseEntity;
 import jakarta.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -67,6 +68,10 @@ public class ToDoTask extends BaseEntity {
 
     public boolean isOwner(@NonNull UUID userId) {
         return this.getOwnerId().equals(userId);
+    }
+
+    public @NonNull Set<UUID> getCollaboratorIds() {
+        return Collections.unmodifiableSet(this.collaboratorIds);
     }
 
     @PrePersist

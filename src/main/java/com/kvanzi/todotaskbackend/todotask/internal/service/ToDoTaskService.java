@@ -136,4 +136,13 @@ public class ToDoTaskService {
         task.addCollaborator(collaboratorId);
         toDoTaskRepository.save(task);
     }
+
+    @Transactional
+    public void removeCollaborator(@NonNull UUID taskId, @NonNull UUID collaboratorId) {
+        ToDoTask task = toDoTaskRepository.findById(taskId)
+            .orElseThrow(() -> new ToDoTaskNotFoundException("Task with id '%s' not found.".formatted(taskId)));
+
+        task.removeCollaborator(collaboratorId);
+        toDoTaskRepository.save(task);
+    }
 }

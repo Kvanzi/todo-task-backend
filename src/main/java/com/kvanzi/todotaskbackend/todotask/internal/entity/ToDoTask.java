@@ -74,6 +74,10 @@ public class ToDoTask extends BaseEntity {
         return Collections.unmodifiableSet(this.collaboratorIds);
     }
 
+    public void addCollaborator(@NonNull UUID userId) {
+        this.collaboratorIds.add(userId);
+    }
+
     @PrePersist
     @PreUpdate
     protected void syncPriorityWeight() {

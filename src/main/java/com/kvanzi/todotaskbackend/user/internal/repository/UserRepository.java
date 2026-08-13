@@ -29,4 +29,12 @@ public interface UserRepository extends JpaRepository<@NonNull User, @NonNull UU
     List<User> lockUsersWithRole(@Param("role") Role role);
 
     @NonNull Page<@NonNull User> findAllByIdIn(@NonNull Set<@NonNull UUID> ids, @NonNull Pageable pageable);
+
+    @Lock(LockModeType.PESSIMISTIC_READ)
+    @Query("select u from User u where u.id = :userId")
+    Optional<User> lockUserById(@Param("userId") UUID userId);
+
+    @Lock(LockModeType.PESSIMISTIC_READ)
+    @Query("select u from User u where u.id in :ids order by u.id")
+    List<User> lockUsersByIds(@Param("ids") Set<UUID> ids);
 }

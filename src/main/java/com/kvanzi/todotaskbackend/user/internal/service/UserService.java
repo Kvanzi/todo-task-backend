@@ -3,6 +3,7 @@ package com.kvanzi.todotaskbackend.user.internal.service;
 import com.kvanzi.todotaskbackend.shared.enumeration.Role;
 import com.kvanzi.todotaskbackend.user.api.dto.PrivateUserSummary;
 import com.kvanzi.todotaskbackend.user.api.dto.PublicUserSummary;
+import com.kvanzi.todotaskbackend.user.api.event.UserDeletedEvent;
 import com.kvanzi.todotaskbackend.user.api.exception.EmailTakenException;
 import com.kvanzi.todotaskbackend.user.api.exception.LastAdminException;
 import com.kvanzi.todotaskbackend.user.api.exception.UserNotFoundException;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jspecify.annotations.NonNull;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher eventPublisher;
     private static final String EMAIL_TAKEN_MESSAGE = "This email is taken by another user.";
 
     /**
@@ -106,6 +109,7 @@ public class UserService {
         ensureUserIsNotTheLastAdmin(userId, "Cannot delete the last admin account.");
 
         userRepository.delete(user);
+        eventPublisher.publishEvent(new UserDeletedEvent(userId));
     }
 
     public @NonNull Page<@NonNull PublicUserSummary> getPublicUsersByIds(@NonNull Set<@NonNull UUID> ids,

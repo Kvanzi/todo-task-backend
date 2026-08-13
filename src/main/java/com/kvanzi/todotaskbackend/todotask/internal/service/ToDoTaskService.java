@@ -40,7 +40,7 @@ public class ToDoTaskService {
 
     @Transactional
     public ToDoTaskSummary createTask(@NonNull UUID ownerId, @NonNull CreateToDoTaskRequest request) {
-        if (!userFacade.existsById(ownerId)) {
+        if (!userFacade.existsByIdWithLock(ownerId)) {
             throw new UserNotFoundException("User not found.");
         }
 
@@ -50,7 +50,7 @@ public class ToDoTaskService {
             throw new OwnerCannotBeCollaboratorException(OWNER_CANNOT_BE_COLLABORATOR_MESSAGE);
         }
 
-        if (!collaboratorIds.isEmpty() && !userFacade.existsAllByIds(collaboratorIds)) {
+        if (!collaboratorIds.isEmpty() && !userFacade.existsAllByIdsWithLock(collaboratorIds)) {
             throw new UserNotFoundException("One or more collaborators not found.");
         }
 
@@ -129,7 +129,7 @@ public class ToDoTaskService {
             throw new OwnerCannotBeCollaboratorException(OWNER_CANNOT_BE_COLLABORATOR_MESSAGE);
         }
 
-        if (!userFacade.existsById(collaboratorId)) {
+        if (!userFacade.existsByIdWithLock(collaboratorId)) {
             throw new UserNotFoundException("User with id '%s' not found.".formatted(collaboratorId));
         }
 

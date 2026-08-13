@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -120,6 +121,19 @@ public class UserService {
 
         return userRepository.findAllByIdIn(ids, pageable)
             .map(userMapper::toPublicUserSummary);
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public boolean existsByIdWithLock(@NonNull UUID id) {
+        return userRepository.lockUserById(id).isPresent();
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public boolean existsAllByIdsWithLock(@NonNull Set<UUID> ids) {
+        if (ids.isEmpty()) {
+            return true;
+        }
+        return userRepository.lockUsersByIds(ids).size() == ids.size();
     }
 
     /**

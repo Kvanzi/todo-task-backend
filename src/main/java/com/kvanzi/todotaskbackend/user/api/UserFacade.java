@@ -41,4 +41,12 @@ public class UserFacade {
         @NonNull Set<@NonNull UUID> ids, @NonNull Pageable pageable) {
         return userService.getPublicUsersByIds(ids, pageable);
     }
+
+    public boolean existsByIdWithLock(@NonNull UUID id) {
+        return userService.existsByIdWithLock(id);
+    }
+
+    public boolean existsAllByIdsWithLock(@NonNull Set<@NonNull UUID> ids) {
+        return userService.existsAllByIdsWithLock(ids);
+    }
 }
